@@ -1,0 +1,270 @@
+---
+title: "Taxa Plot Tutorial"
+author: "Laura Schaerer"
+date: "2/23/2023"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Taxa Plot Tutorial
+
+This tutorial shows  you how to make a taxa plot from a phyloseq object. 
+
+### Start by loading the required R packages
+
+(Packages must be installed prior to running this tutorial)
+
+```{r loadpkgs}
+library(tidyverse)
+library(phyloseq)
+```
+
+## Load your phyloseq object
+
+This tutorial assumes that you have a phyloseq object of the data that you want to plot. The example phyloseq object shown here has 9 samples, 9 sample variables, and 12,003 unique taxa.
+
+```{r checkps}
+toy_ps <- read_rds("/Users/lgschaer/Desktop/toy_phyloseq.rds")
+toy_ps
+```
+
+## Explore the sample variables in the test phyloseq object
+
+This tutorial assumes that you have a phyloseq object of the data that you want to plot. The example phyloseq object shown here has 9 samples, 9 sample variables, and 12,003 unique taxa.
+
+```{r checkps2}
+head(sample_data(toy_ps))
+```
+
+## STEP #1: Convert the phyloseq object into a dataframe that can be more easily manipulated
+
+The tax_glom() function specifies the most specific taxonomic level you are interested in. Change the taxonomic level to the most specific level you are interested in plotting. The more broad the category, the quicker the code will run. This step will probably run slowly for a large data set.
+
+```{r psglom}
+genusabundance <- toy_ps %>%
+  tax_glom(taxrank = "Genus") %>%                      # agglomerate at class level
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%   # Transform to rel. abundance
+  psmelt() %>%                                           # Melt to long format
+  arrange(Genus) 
+head(genusabundance)
+```
+
+## STEP #2: Filter, group and modify data to prepare for plotting.
+
+Here we will make a simplified data frame that only includes the variables we are interested in plotting for all taxonomic levels. 
+
+select() function: Choose which variables to include in the plot. Select ALL variables that will be used for x-axis and/or facet labels in addition to all taxonomic levels you are interested in. 
+
+filter() function: Filter out all taxa with zero percent abundance. Filter can also be used to remove treatments or conditions that are not to be included in the plot.
+
+mutate() function: Convert the taxonomic level columns to character vectors (they are factors by default), can also be used to add additional columns or modify existing columns as desired.
+
+
+```{r mkall}
+all <- genusabundance %>%
+  select(Phylum, Class, Family, Genus, Sample, Abundance, Substrate, Substrate_Label, Replicate) %>%
+  filter(Abundance != 0) %>%
+  mutate(
+    Phylum = as.character(Phylum),
+    Class = as.character(Class),
+    Family = as.character(Family),
+    Genus = as.character(Genus))
+head(all)
+```
+
+
+## STEP #3: Prepare to plot Phylum
+
+Here we will group the data even more to prepare to make a taxa plot at the Phylum level
+
+group_by() function: Groups data by the specified variables. Include ONLY the variables that will be used in the ggplot() command to make the plot. Adding additional variables here can lead to aesthetic problems with the plot. 
+
+summarise() function: This function will collapse the data based on the groups specified in the group_by() function above. Here we will calculate the average abundance for each group (sum of the abundance of each phyla for each unique substrate/replicate combination divided by the total number of samples in each group). 
+
+
+```{r mkphylum}
+phylum <- all %>%
+  select(Substrate, Substrate_Label, Replicate, Phylum, Abundance) %>%  #choose variables to work with
+  group_by(Substrate, Substrate_Label, Replicate) %>%                   #group by variables used to plot NOT taxonomic level
+  mutate(totalSum = sum(Abundance)) %>%                                 #calculate total abundance of each Phylum
+  ungroup() %>%                                                         #remove grouping variables
+  group_by(Substrate, Substrate_Label, Replicate, Phylum) %>%           #now group by same variables as before PLUS taxonomic level
+  summarise(                                                            
+    Abundance = sum(Abundance),                                         #sum abundance in each phylum for each unique group of variables
+    totalSum,
+    RelAb = Abundance/totalSum) %>%                                     #calculate relative abundance
+  unique()
+head(phylum)
+
+```
+
+Check data: maximum should be no greater than 1, minimum should be more than zero
+
+```{r checkphylum}
+max(phylum$RelAb)
+mean(phylum$RelAb)
+min(phylum$RelAb)
+```
+
+## STEP #4: Prepare colors for the plot
+
+Calculate how many colors will be needed. This is equal to the length of the unique values in the Phylum column of the "phylum" dataframe (18).
+
+Save a vector of color names to be used for plotting.
+
+Check the length to be sure there are enough colors... Here we have 25 colors, more than enough!
+
+```{r mkphycols}
+length(unique(phylum$Phylum))
+
+phylum_colors <- c(
+  "grey22", "darkcyan", "orchid1", "green", "orange", "blue", "tomato2", "olivedrab", "grey47",
+  "cyan", "coral3", "darkgreen", "magenta", "palegoldenrod", "dodgerblue", "firebrick", "yellow", "purple4",
+  "lightblue", "grey77", "mediumpurple1", "tan4", "red", "darkblue", "yellowgreen")
+
+length(phylum_colors)
+```
+
+## STEP #5: Make a plot!
+
+geom_col(): this creates the columns in the plot. Bars should add to exactly 1, if not check grouping variables. If bars add exactly to 1, percentages from the dataframe "phylum" can be interpreted directly as relative abundances.
+Anything inside aes() will create a legend: Fill = Phylum
+Anything outside outside aes() will NOT create a legend: Color = "black": creates black outline around colored blocks. If more than one block of the same color, check grouping variables in Step # 3.
+
+facet_grid(): divides the figure into panels based on the variables provided.
+
+scale_fill_manual(): specifies vector of colors to use instead of default colors.
+
+theme_linedraw(): sets theme for graphic. Additional themes are available.
+
+theme(): aesthetic tweaks to appearance, font size, etc.
+
+guides(): adjusts legend
+
+```{r plotphy}
+ggplot(phylum)+
+  geom_col(mapping = aes(x = Replicate, y = RelAb, fill = Phylum), color = "black", position = "stack", show.legend = TRUE)+
+  facet_grid(cols = vars(Substrate_Label))+
+  ylab("Proportion of Community") +
+  xlab(NULL)+
+  scale_fill_manual(values = phylum_colors) +
+  theme_linedraw()+
+  theme(axis.text.y = element_text(size = 20, color = "black"),
+        axis.title.y = element_text(size = 18, color = "black"),
+        axis.text.x = element_text(size = 20, angle = 0, vjust = 1, hjust = 0.5, color = "black"),
+        legend.text = element_text(size = 13),
+        legend.position = "bottom",
+        legend.spacing.x = unit(0.1, 'mm'),
+        legend.spacing.y = unit(0.05, 'mm'),
+        plot.margin=grid::unit(c(0.1,0.1,0.1,0.1), "mm"),
+        strip.text = element_text(size = 18, face = "bold", angle = 0),
+        legend.title = element_text(face="bold", size = 22))+
+  guides(fill=guide_legend(ncol=3,byrow=TRUE))
+
+```
+
+## STEP #6: Plotting other taxonomic levels, grouping low abundance taxa.
+
+Plotting other taxonomic levels is very similar, starting with the "all" dataframe we created earlier, modify the grouping variables to desired taxonomic level. This example will be grouped by genus.
+
+
+
+```{r mkgenus}
+genus <- all %>%
+  select(Substrate, Substrate_Label, Replicate, Genus, Abundance) %>%
+  group_by(Substrate, Substrate_Label, Replicate) %>%
+  mutate(totalSum = sum(Abundance)) %>%
+  ungroup() %>%
+  group_by(Substrate, Substrate_Label, Replicate, Genus) %>%
+  summarise(
+    Abundance = sum(Abundance),
+    totalSum,
+    RelAb = Abundance/totalSum) %>%
+  unique()
+head(genus)
+
+```
+
+Check distribution of the data, these should all be between 1 and 0.
+Here we also check the number of unqiue genera, there are 230! It would be impossible to visualize 230 colors in a figure. 
+
+```{r checkgenus}
+
+max(genus$RelAb)
+mean(genus$RelAb)
+min(genus$RelAb)
+
+length(unique(genus$Genus))
+```
+
+One solution for this is to group low abundance genera into a single category. Here we add this to our grouping of the dataframe "all" created earlier. Here I am grouping all genera present at less than 5% relative abundance into a single group.
+
+Using mutate() paired with ifelse() allows us to group any taxa with low (< 5% relative abundance) into a single category, reducing the number of colors needed.
+
+
+```{r mkgenus2}
+genus <- all %>%
+  select(Substrate, Substrate_Label, Replicate, Genus, Abundance) %>%
+  group_by(Substrate, Substrate_Label, Replicate) %>%
+  mutate(totalSum = sum(Abundance)) %>%
+  ungroup() %>%
+  group_by(Substrate, Substrate_Label, Replicate, Genus, totalSum) %>%
+  summarise(
+    Abundance = sum(Abundance),
+    Genus = ifelse(Abundance < 0.05, "< 5 %", Genus)) %>%               #change Genus label to group low abundance taxa together
+  group_by(Substrate, Substrate_Label, Replicate, Genus, totalSum) %>%  #now group and summarize again to group newly labeled low abundance taxa together
+  summarise(
+    Abundance = sum(Abundance),
+    RelAb = Abundance/totalSum) %>%
+  unique()
+head(genus)
+
+```
+
+
+Now check the number of unique genera we have... 17 unique genera! Much easier to visualize!
+
+```{r checkgenus2}
+length(unique(genus$Genus))
+```
+
+
+One way to get a long vector of colors is to use colorRampPalette to make a color palette based on a few supplied colors.
+
+```{r mkgencols}
+colFunc <- colorRampPalette(c("purple4", "lightpink", "firebrick", "orange", "lemonchiffon", "olivedrab4", "darkcyan", "lightblue", "darkblue"))
+color_list <- colFunc(length(unique(genus$Genus)))
+genus_colors <- c("black", color_list)
+length(genus_colors)
+```
+
+Now we can plot the data! This same process can be used to plot any taxonomic level where there are too many unique genera to visualize all of them. 
+
+```{r plotgen}
+ggplot(genus)+
+  geom_col(mapping = aes(x = Replicate, y = RelAb, fill = Genus), color = "black", position = "stack", show.legend = TRUE)+
+  facet_grid(cols = vars(Substrate_Label))+
+  ylab("Proportion of Community") +
+  xlab(NULL)+
+  scale_fill_manual(values = genus_colors) +
+  theme_linedraw()+
+  theme(axis.text.y = element_text(size = 20, color = "black"),
+        axis.title.y = element_text(size = 18, color = "black"),
+        axis.text.x = element_text(size = 20, angle = 0, vjust = 1, hjust = 0.5, color = "black"),
+        legend.text = element_text(size = 13),
+        legend.position = "bottom",
+        legend.spacing.x = unit(0.1, 'mm'),
+        legend.spacing.y = unit(0.05, 'mm'),
+        plot.margin=grid::unit(c(0.1,0.1,0.1,0.1), "mm"),
+        strip.text = element_text(size = 18, face = "bold", angle = 0),
+        legend.title = element_text(face="bold", size = 22))+
+  guides(fill=guide_legend(ncol=3,byrow=TRUE))
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
