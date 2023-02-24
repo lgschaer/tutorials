@@ -1,7 +1,8 @@
 # Tutorials for 16S rRNA Sequence Analysis
 
 
-## Taxa plots: https://rpubs.com/lgschaerer/1006964
+## Taxa plots: 
+## Link to tutorial: https://rpubs.com/lgschaerer/1006964
 
 This tutorial shows you how to make a stacked bar chart from a phyloseq object. Requires phyloseq and tidyverse to be installed.
 
