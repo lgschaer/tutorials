@@ -1,4 +1,19 @@
-# Tutorials for 16S rRNA Sequence Analysis
+# Tutorials for 16S rRNA Sequence Analysis (Run DADA2 first!)
+
+
+## Making a phyloseq object
+
+This tutorial shows you how to make a phyloseq object from the ouput files from DADA2. 
+
+
+## Alpha Diversity
+
+This tutorial shows you how to compare alpha diversity of different sample groups.
+
+
+## Beta Diversity
+
+This tutorial shows you how to compare alpha diversity of different sample groups.
 
 
 ## Making a taxa plot
