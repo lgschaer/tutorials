@@ -3,12 +3,12 @@
 
 ## Making a phyloseq object
 
-This tutorial shows you how to make a phyloseq object from the ouput files from DADA2. 
+This tutorial shows you how to make a phyloseq object from the ouput files from DADA2. Requires phyloseq and tidyverse.
 
 
 ## Alpha Diversity
 
-This tutorial shows you how to compare alpha diversity of different sample groups.
+This tutorial shows you how to compare alpha diversity of different sample groups. Requires phyloseq, tidyverse, and FSA to be installed. Link to tutorial: 
 
 
 ## Beta Diversity
