@@ -1,4 +1,9 @@
-# Tutorials for 16S rRNA Sequence Analysis (Run DADA2 first!)
+# Tutorials for 16S rRNA Sequence Analysis 
+
+
+## Run DADA2 first!
+
+See tutorial here: https://benjjneb.github.io/dada2/tutorial.html
 
 
 ## Making a phyloseq object
