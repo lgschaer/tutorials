@@ -8,8 +8,9 @@ This tutorial shows you how to make a phyloseq object from the ouput files from 
 
 ## Alpha Diversity
 
-This tutorial shows you how to compare alpha diversity of different sample groups. Requires phyloseq, tidyverse, and FSA to be installed. Link to tutorial: 
+This tutorial shows you how to compare alpha diversity of different sample groups. Make boxplots to visualize differences. Run Kruskall-Wallis and Dunn (post-hoc) tests to test for statistically significant differences. Requires phyloseq, tidyverse, and FSA to be installed. Link to tutorial: 
 
+![image](https://github.com/lgschaer/tutorials/assets/47119257/6345ece6-bd7f-47f8-a9bc-4058172be0e5)
 
 ## Beta Diversity
 
