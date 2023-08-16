@@ -8,7 +8,7 @@ See tutorial here: https://benjjneb.github.io/dada2/tutorial.html
 
 ## Making a phyloseq object
 
-This tutorial shows you how to make a phyloseq object from the ouput files from DADA2. Requires phyloseq and tidyverse to be installed. Link to tutorial: 
+This tutorial shows you how to make a phyloseq object from the ouput files from DADA2. Requires phyloseq, csv, and tidyverse to be installed. Link to tutorial: https://rpubs.com/lgschaerer/pstutorial
 
 
 ## Alpha Diversity
