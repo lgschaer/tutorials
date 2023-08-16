@@ -1,0 +1,19 @@
+SampleID,Environment,Sample_Type,Replicate,Substrate,Transfer,Substrate_Label,Environment_Label_Location,Environment_Label
+CCONR1T1,Compost,Enrichment,R1,Control,T1,Control,"Compost
+Calumet, MI",Compost
+CCONR2T1,Compost,Enrichment,R2,Control,T1,Control,"Compost
+Calumet, MI",Compost
+CCONR3T1,Compost,Enrichment,R3,Control,T1,Control,"Compost
+Calumet, MI",Compost
+CTAR1T1,Compost,Enrichment,R1,TA,T1,Terephthalamide,"Compost
+Calumet, MI",Compost
+CTAR2T1,Compost,Enrichment,R2,TA,T1,Terephthalamide,"Compost
+Calumet, MI",Compost
+CTAR3T1,Compost,Enrichment,R3,TA,T1,Terephthalamide,"Compost
+Calumet, MI",Compost
+CTPR1T1,Compost,Enrichment,R1,TPA,T1,Terephthalate,"Compost
+Calumet, MI",Compost
+CTPR2T1,Compost,Enrichment,R2,TPA,T1,Terephthalate,"Compost
+Calumet, MI",Compost
+CTPR3T1,Compost,Enrichment,R3,TPA,T1,Terephthalate,"Compost
+Calumet, MI",Compost
