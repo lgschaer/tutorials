@@ -11,7 +11,7 @@ See tutorial here: https://benjjneb.github.io/dada2/tutorial.html
 This tutorial shows you how to make a phyloseq object from the ouput files from DADA2. Requires phyloseq, csv, and tidyverse to be installed. Link to tutorial: https://rpubs.com/lgschaerer/pstutorial
 
 
-## Alpha Diversity
+## Alpha Diversity + stats (Kruskall Wallis w/ Dunn post-hoc test)
 
 This tutorial shows you how to compare alpha diversity of different sample groups. Make boxplots to visualize differences. Run Kruskall-Wallis and Dunn (post-hoc) tests to test for statistically significant differences. Requires phyloseq, tidyverse, and FSA to be installed. Link to tutorial: https://rpubs.com/lgschaerer/alphadiv
 
