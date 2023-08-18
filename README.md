@@ -19,7 +19,7 @@ This tutorial shows you how to compare alpha diversity of different sample group
 
 ## Beta Diversity
 
-This tutorial shows you how to compare alpha diversity of different sample groups. Requires phyloseq, tidyverse, and ape to be installed. Link to tutorial: 
+This tutorial shows you how to compare alpha diversity of different sample groups. Requires phyloseq, tidyverse, and ape to be installed. Link to tutorial: https://rpubs.com/lgschaerer/betadiv
 
 
 ## Making a taxa plot
