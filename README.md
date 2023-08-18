@@ -17,9 +17,11 @@ This tutorial shows you how to compare alpha diversity of different sample group
 
 ![image](https://github.com/lgschaer/tutorials/assets/47119257/6345ece6-bd7f-47f8-a9bc-4058172be0e5)
 
-## Beta Diversity
+## Beta Diversity + stats (PERMANOVA)
 
 This tutorial shows you how to compare alpha diversity of different sample groups. Requires phyloseq, tidyverse, and ape to be installed. Link to tutorial: https://rpubs.com/lgschaerer/betadiv
+
+![image](https://github.com/lgschaer/tutorials/assets/47119257/5ed3fa8f-ce91-4c5c-a7fb-10b1c33ab059)
 
 
 ## Making a taxa plot
